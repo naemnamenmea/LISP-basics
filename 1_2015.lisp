@@ -292,7 +292,7 @@
 )
 
 (defun is-siblings (x y)
-    ((lambda (p-x p-y) (if (eq (car p-x) (car p-y)) t (if (eq (cadr p-x) (cadr p-y)) t nil)))
+    ((lambda (p-x p-y) (if (or (eq (car p-x) (car p-y)) (eq (cadr p-x) (cadr p-y))) t nil))
         (get-parents x) (get-parents y))
 )
 
