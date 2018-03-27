@@ -277,9 +277,9 @@
 ;;; (СЕСТРЫ-БРАТЬЯ x1 x2), который истинен в случае, если x1 и x2 — сестры или братья,
 ;;; родные или с одним общим родителем.
 
-(defun set-parents (x m f)
-    (setf (get x 'father) f)
-    (setf (get x 'mother) m)
+(defun set-parents (&key child mother father)
+    (setf (get child 'father) father)
+    (setf (get child 'mother) mother)
 )
 
 (defun get-parents (x)
@@ -287,15 +287,15 @@
 )
 
 (defun is-siblings (x y)
-    ((lambda (p-x p-y) (if (or (eq (car p-x) (car p-y)) (eq (cadr p-x) (cadr p-y))) t nil))
+    ((lambda (p-x p-y) (or (eq (car p-x) (car p-y)) (eq (cadr p-x) (cadr p-y))))
         (get-parents x) (get-parents y))
 )
 
-(set-parents 'Peter 'Alice 'Dread)
-(set-parents 'Dennis 'Pall 'Jane)
-(set-parents 'Colin 'Merry 'Dread)
-(set-parents 'Genry 'Alice 'Dread)
-(set-parents 'Susie 'Alice 'Mat)
+(set-parents :child 'Peter :mother 'Alice :father 'Dread)
+(set-parents :child 'Dennis :mother 'Jane :father 'Pall)
+(set-parents :child 'Colin :mother 'Merry :father 'Dread)
+(set-parents :child 'Genry :mother 'Alice :father 'Dread)
+(set-parents :child 'Susie :mother 'Alice :father 'Mat)
 
 
 (print (get-parents 'Dan ))
