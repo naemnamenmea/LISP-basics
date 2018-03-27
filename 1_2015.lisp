@@ -305,22 +305,6 @@
 (print (is-siblings 'Peter 'Genry))
 (print (is-siblings 'Genry 'Susie))
 
-#|
-(set 'a '(+ 2 3))
-(defun a (x y) (+ x y))
-
-(get 'a 'mood)
-(setf (get 'a 'mood) 'bad)
-
-;(print (get 'a 'mood))
-;(print (symbolp 'a))
-;(print (symbol-value 'a))
-;(print (symbol-function 'a))
-;(print (symbol-plist 'a))
-
-(print (concatenate 'string "Dans parents are" (get-parents 'Dan )))
-|#
-
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 ;;; #48
