@@ -253,20 +253,20 @@
         )
     )
 
-(defun is-subset (&key set subset)
+(defun subsetp (&key set subset)
     (cond
         ((null subset) t)
         ((null set) nil)
-        (t (and (-member :el (car subset) :lst set) (is-subset :set set :subset (cdr subset))))
+        (t (and (-member :el (car subset) :lst set) (subsetp :set set :subset (cdr subset))))
     )
 )
 
-(print (is-subset :set '(a b c d e) :subset '(c b e))) ;T
-(print (is-subset :set '(a d e) :subset '(e))) ;T
-(print (is-subset :set () :subset '(a))) ;nil
-(print (is-subset :set () :subset ())) ;T
-(print (is-subset :set '(a d e) :subset ())) ;T
-(print (is-subset :set '(a b c d e) :subset '(c b g e))) ;nil
+(print (subsetp :set '(a b c d e) :subset '(c b e))) ;T
+(print (subsetp :set '(a d e) :subset '(e))) ;T
+(print (subsetp :set () :subset '(a))) ;nil
+(print (subsetp :set () :subset ())) ;T
+(print (subsetp :set '(a d e) :subset ())) ;T
+(print (subsetp :set '(a b c d e) :subset '(c b g e))) ;nil
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
