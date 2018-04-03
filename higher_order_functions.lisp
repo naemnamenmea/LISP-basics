@@ -60,14 +60,14 @@
 ;;; истинен для всех элементов списка список.
 
 
-(defun every (p lst)
-  (dolist (i lst t) (unless (funcall p i) (return nil))))
-
+(defun -every (p lst)
+   (null (mapcan #'(lambda (x) (if (funcall p x) nil (list t)) ) lst)))   
+   
   
-(print (every 'evenp '(2 4 6)))  
-(print (every 'evenp '(2 1 4 6)))
-(print (every (lambda (x) (not (= x 0))) '(2 1 4 6)))
-(print (every (lambda (x) (not (= x 0))) '(2 1 4 0 6)))
+(print (-every 'evenp '(2 4 6)))  
+(print (-every 'evenp '(2 1 4 6)))
+(print (-every (lambda (x) (not (= x 0))) '(2 1 4 6)))
+(print (-every (lambda (x) (not (= x 0))) '(2 1 4 0 6)))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
@@ -78,14 +78,14 @@
 
 
 
-(defun try (p lst)
-  (dolist (i lst nil) (when (funcall p i) (return T))))
+(defun -try (p lst)
+   (not (null (mapcan #'(lambda (x) (if (funcall p x) (list t) nil) ) lst))))
 
   
-(print (try 'evenp '(1 2 3 5 7)))  
-(print (try 'evenp '(1 3 5 7)))
-(print (try (lambda (x) (not (= x 0))) '(0 0 0 0 1 0)))
-(print (try (lambda (x) (not (= x 0))) '(0 0 0)))
+(print (-try 'evenp '(1 2 3 5 7)))  
+(print (-try 'evenp '(1 3 5 7)))
+(print (-try (lambda (x) (not (= x 0))) '(0 0 0 0 1 0)))
+(print (-try (lambda (x) (not (= x 0))) '(0 0 0)))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
@@ -94,13 +94,8 @@
 ;;; которые обладают свойством, наличие которого проверяет предикат пред.
 
 
-
 (defun del-if (pred lst)
-    (let ((r nil))
-        (dolist (i lst r)
-            (when (Not (funcall pred i)) (setq r (append r (list i))))
-        )
-    )
+	(mapcan #'(lambda (x) (if (funcall pred x) nil (list x))) lst)
 ) 
  
 (print (del-if #'evenp '(1 2 3 4 5 6 7)))
@@ -115,11 +110,7 @@
 
 
 (defun del-if-not (pred lst)
-    (let ((r nil))
-        (dolist (i lst r)
-            (when (funcall pred i) (setq r (append r (list i))))
-        )
-    )
+	(mapcan #'(lambda (x) (if (funcall pred x) (list x) nil)) lst)
 ) 
  
 (print (del-if-not #'evenp '(1 2 3 4 5 6 7)))
