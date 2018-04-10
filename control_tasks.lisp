@@ -81,10 +81,10 @@
     (cond
         ((null lst) nil)
         ((null (cdr lst)) (list lst))
-        (t ((lambda (prev-res) (if (< (car lst) (caar prev-res))
-                (cons (cons (car lst) (car prev-res)) (cdr prev-res))
-                (cons (list (car lst)) prev-res)))
-            (f (cdr lst))))
+        (t ((lambda (prev-res head) (if (< head (caar prev-res))
+                (cons (cons head (car prev-res)) (cdr prev-res))
+                (cons (list head) prev-res)))
+            (f (cdr lst)) (car lst)))
     )
 )
 
@@ -102,12 +102,22 @@
 ;;; «Группа» и «Cредний бал». В качестве условия–фильтра рассмотреть
 ;;; «Средний бал больше 4», порядок сортировки — «Группа–Фамилия–Имя–Средний бал».
 
+(defun list-head (lst n) (if (eq n 0) '() (cons (car lst) (list-head (cdr lst) (- n 1)))))
+(defun list-tail (lst n) (if (eq n 0) lst (list-tail (cdr lst) (- n 1))))
 
-(defun initialize nil (defparameter *n* 0))
+(defun _merge (lst-a lst-b)
+  (cond ((null lst-a) lst-b)
+        ((null lst-b) lst-a)
+        ((< (car lst-a) (car lst-b)) (cons (car lst-a) (_merge (cdr lst-a) lst-b)))
+        (t (cons (car lst-b) (_merge lst-a (cdr lst-b))))))
 
-(defun gen-nat-num nil
-    (prog1 *n* (incf *n*)))
+(defun mergesort (lst)
+  (if (null (cdr lst))
+    lst
+    (_merge (mergesort (list-head lst (truncate (length lst) 2)))
+            (mergesort (list-tail lst (truncate (length lst) 2))))))
 
+       
 (defun set-student (id -group -surname -name -ev-mark)
     (setf (get id 'group) -group)
     (setf (get id 'surname) -surname)
@@ -118,8 +128,6 @@
 (defun get-student (x)
     (list (get x 'group) (get x 'surname) (get x 'name) (get x 'ev-mark))
 )
-
-(initialize)
 
 (set-student 'student "402-I" "Green" "Peter" 5)
 ;(set-student (gen-nat-num) '402-I 'Green 'Peter 5)
@@ -196,6 +204,15 @@
 ;;; В заданном списке списков найти самый длинный подсписок. Использовать
 ;;; отображающие и применяющие функционалы.
 
+(defun all-longest-sublists (lst)
+    ((lambda (maxl) (mapcan #'(lambda (sub-lst) (when (eq (length sub-lst) maxl) (list sub-lst))) lst))
+         (apply 'max (mapcar 'length lst)))
+)
+
+(print (all-longest-sublists '(())))
+(print (all-longest-sublists '((3))))
+(print (all-longest-sublists '((3) () (2 1) (4) (42 2))))
+(print (all-longest-sublists '((3) () (2 1) (4) (42 2) (1 2 3))))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
@@ -302,6 +319,17 @@
 ;;; Построить эту матрицу в виде бесконечного списка бесконечных списков и
 ;;; вычислить сумму первых 10 элементов 5-го столбца матрицы.
 
+(defun matrix ()
+    (let ((m '((1))))
+         (lambda () (progn
+            (setf m (cons '(1) m))
+            (reverse m)
+            ))))
+
+(setq m1 (matrix))
+
+(print (funcall m1))
+(print (funcall m1))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 

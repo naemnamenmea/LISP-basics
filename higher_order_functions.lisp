@@ -121,20 +121,17 @@
 ;;; #8
 ;;; Напишите генератор натуральных чисел: 0, 1, 2, 3, 4, 5, ...
 
+(defun natural ()
+    (let ((c 0))
+         (lambda () (setf c (incf c)))))
 
+(setq n1 (natural))
+(setq n2 (natural))
 
-(defun initialize nil (defparameter *n* 0))
-
-(defun gen-nat-num nil
-    (prog1 *n* (incf *n*)))
-
-(defun print-n-nat-num (n) 
-    (loop repeat n do
-        (print (gen-nat-num))))
-
-(initialize)
-;(print (gen-nat-num))
-(print-n-nat-num 11)
+(print (funcall n1))
+(print (funcall n1))
+(print (funcall n2))
+(print (funcall n1))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
@@ -169,23 +166,19 @@
 ;;; #10
 ;;; Напишите генератор, порождающий последовательность (A), (B A), (A B A), (B A B A), ...
 
+(defun sAB ()
+    (let ((pos nil))
+         (lambda () (if (eq 'A (car pos))
+                        (setf pos (cons 'B pos))
+                        (setf pos (cons 'A pos))))))
 
+(setq s1 (sAB))
+(setq s2 (sAB))
 
-(defun initialize nil
-    (defparameter *s* '(A)))
-
-(defun gen-list nil
-    (prog1
-        *s*
-        (setq *s* (if (eq (car *s*) 'A) (cons 'B *s*) (cons 'A *s*)))))
-
-(defun print-n-gen (n) 
-    (loop repeat n do
-        (print (gen-list))))
-
-(initialize)
-;(print (gen-list))
-(print-n-gen 17)
+(print (funcall s1))
+(print (funcall s1))
+(print (funcall s2))
+(print (funcall s1))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
