@@ -123,7 +123,7 @@
 
 (defun natural ()
     (let ((c 0))
-         (lambda () (setf c (incf c)))))
+         (lambda () (incf c))))
 
 (setq n1 (natural))
 (setq n2 (natural))

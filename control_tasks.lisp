@@ -174,7 +174,7 @@
 (defun spath (carc n1 n2 &optional (c carc) (r 0))
   (cond ((null carc) nil)
         ((= n1 n2) r)
-        ((= (cadar carc) n2) (spath c n1 (caar carc) c (incf r)))
+        ((= (cadar carc) n2) (spath c n1 (caar carc) c (+ 1 r)))
         (t (spath (cdr carc) n1 n2 c r)))) 
                         
 ;; ведущая программа   
@@ -319,17 +319,38 @@
 ;;; Построить эту матрицу в виде бесконечного списка бесконечных списков и
 ;;; вычислить сумму первых 10 элементов 5-го столбца матрицы.
 
+#|
+(defun range (n &key (from 0) (step 1))
+   (let ((res nil)) (dotimes (i n) (push (+ from (* step i)) res)) (reverse res)))
+;(print (range 10 :from 2 :step 3))
+
+(defun range (max &key (min 0) (step 1))
+   (loop for n from min below max by step
+      collect n))
+;(print (range 10 :min 1 :step 2))
+|#
+
+(defun print-matrix (matrix stream)
+    (format stream "~{~{~3a~^ ~}~%~}" matrix))
+
+(defun sum-mtrx-rect (m &key row-from row-to col-from col-to)
+    (apply '+ (mapcar #'(lambda (row) (apply '+ (subseq row col-from col-to))) (subseq m row-from row-to))))
+
 (defun matrix ()
-    (let ((m '((1))))
-         (lambda () (progn
-            (setf m (cons '(1) m))
-            (reverse m)
-            ))))
+    (let ((m '((1))) (n 1))
+         (lambda () (prog1
+            (reverse (mapcar 'reverse m))
+            (setf m ((lambda (tm) (cons (list (+ 1 (caar tm))) tm))
+                     (mapcar #'(lambda (row) (cons (+ n (car row)) row)) m)))
+            (incf n)))))
 
-(setq m1 (matrix))
 
-(print (funcall m1))
-(print (funcall m1))
+(setq m-gen (matrix))
+(setq m-static (let ((res nil)) (dotimes (i 14 res) (setf res (funcall m-gen)))))
+
+
+(print-matrix m-static t)
+(print (sum-mtrx-rect m-static :row-from 0 :row-to 10 :col-from 4 :col-to 5))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
