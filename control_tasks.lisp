@@ -2,55 +2,63 @@
 ;;; Пусть матрицы задаются в виде списка списков. Реализовать функции
 ;;; сложения и умножения матриц, вычисления определителя матрицы.
 
+(defun print-matrix (matrix)
+    (format t "~%~%/-----------~%~{~{~3,d~^ ~}~%~%~}\\--------------~%" matrix))
 
-(defun matrix-sum (m1 m2)
+(defun matrix-sum2 (m1 m2)
     (cond
     ((or (null m1) (null m2)) nil)   
     (t ((lambda (v) (if (and (numberp (car m1)) (numberp (car m2)))
             (cons (+ (car m1) (car m2)) v) 
             (cons (matrix-sum (car m1) (car m2)) v)))
-        (matrix-sum (cdr m1) (cdr m2))))
-    )
-)
+        (matrix-sum (cdr m1) (cdr m2))))))
 
-;(print (matrix-sum '() '()))
-(print (matrix-sum '(3) '(-7)))
-;(print (matrix-sum '(1 -1 3) '(2 1 4)))
-;(print (matrix-sum '((-3 6 3) (4 -3 6)) '((-3 6 4) (3 -1 3))))
+(defun matrix-sum (m1 m2)
+    (mapcar #'(lambda (row1 row2) (mapcar '+ row1 row2)) m1 m2))    
+    
+(print-matrix (matrix-sum '(()) '(()))) ;nil
+(print-matrix (matrix-sum '((3)) '((-7))))
+(print-matrix (matrix-sum '((1 -1 3)) '((2 1 4))))
+(print-matrix (matrix-sum '((-3 6 3) (4 -3 6)) '((-3 6 4) (3 -1 3))))
+
+(defun cols2 (m)
+    (let ((m-cols (make-list (length m))))
+         (loop for row in m do (setf m-cols (mapcar 'cons row m-cols)))
+         (mapcar 'reverse m-cols)))        
+
+(defun cols (m)
+    (when (not (null (mapcan #'(lambda (row) (when (not (null (car row))) (list t))) m)))
+        (cons (mapcar 'car m) (cols (mapcar 'cdr m)))))
+
 
 (defun matrix-mul (m1 m2)
-    (cond
-    ((null m1) nil)   
-    (t ((lambda (v) (if (and (numberp (car m1)) (numberp (car m2)))
-            (cons (+ (car m1) (car m2)) v) 
-            (cons (matrix-mul (car m1) (car m2)) v)))
-        (matrix-mul (cdr m1) m2)))
-    )
-    
-    (t (cons EL (matrix-mul (cdr m1) m2)))
-)
+    (when (eq (length (car m1)) (length m2))
+        ((lambda (-m1) (mapcar #'(lambda (row) (mapcar #'(lambda (col) (apply '+ (mapcar '* row col))) -m1)) m1)) (cols m2))))
 
-;(print (matrix-mul '() '()))
-(print (matrix-mul '(3) '(-7)))
-;(print (matrix-mul '(1 -1 3) '(2 1 4)))
-;(print (matrix-mul '((-3 6 3) (4 -3 6)) '((-3 6 4) (3 -1 3))))
+(print-matrix (matrix-mul '(()) '(()))) ;nil
+(print-matrix (matrix-mul '((3)) '((-7))))
+(print-matrix (matrix-mul '((1 -1 3)) '((2 1 4) (1 4 3) (-1 5 0))))
+(print-matrix (matrix-mul '((-3 6) (4 -3)) '((-3 6 4) (3 -1 3))))
+(print-matrix (matrix-mul '((3)) '((-7) (4)))) ;nil
+
+(defun minor (m &optional (i 1) (j 1))
+    ((lambda (-m l) (mapcar #'(lambda (row) (append (subseq row 0 (- j 1)) (subseq row j l))) -m))
+     (append (subseq m 0 (- i 1)) (subseq m i (length m))) (apply 'max (mapcar 'length m))))
 
 (defun matrix-det (m)
-    (cond
-    ((null m1) nil)   
-    (t ((lambda (v) (if (and (numberp (car m1)) (numberp (car m2)))
-            (cons (+ (car m1) (car m2)) v) 
-            (cons (matrix-det (car m1) (car m2)) v)))
-        (matrix-det (cdr m1) m2)))
-    )
-    
-    (t (cons EL (matrix-det (cdr m1) m2)))
-)
+    (if (and (null (cdr m)) (null (cdar m)))
+        (caar m)
+        (let ((det 0) (l (apply 'max (mapcar 'length m))) (row (car m)))
+                (loop for i from 1 to l do
+                 (setf det (+ det (* (nth (- i 1) row) (expt (- 1) (+ 1 i)) (matrix-det (minor m 1 i))))))
+                det)))
 
-;(print (matrix-det '() '()))
-(print (matrix-det '(3) '(-7)))
-;(print (matrix-det '(1 -1 3) '(2 1 4)))
-;(print (matrix-det '((-3 6 3) (4 -3 6)) '((-3 6 4) (3 -1 3))))
+
+(print (matrix-det '(()))) ;nil
+(print (matrix-det '((3))))
+(print (matrix-det '((-1 3) (3 -2))))
+(print (matrix-det '((1 -1 3) (3 4 -2) (0 3 5))))
+(print (matrix-det '((2 3 0 4 5) (0 1 0 -1 2) (3 2 1 0 1) (0 4 0 -5 0) (1 1 2 -2 1))))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
@@ -329,9 +337,6 @@
       collect n))
 ;(print (range 10 :min 1 :step 2))
 |#
-
-(defun print-matrix (matrix stream)
-    (format stream "~{~{~3a~^ ~}~%~}" matrix))
 
 (defun sum-mtrx-rect (m &key row-from row-to col-from col-to)
     (apply '+ (mapcar #'(lambda (row) (apply '+ (subseq row col-from col-to))) (subseq m row-from row-to))))
